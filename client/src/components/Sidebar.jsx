@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Divider,
@@ -13,28 +13,17 @@ import {
   useTheme,
 } from "@mui/material";
 import {
-  SettingsOutlined,
+
   ChevronLeft,
   ChevronRightOutlined,
   HomeOutlined,
-  ShoppingCartOutlined,
-  Groups2Outlined,
-  ReceiptLongOutlined,
-  PublicOutlined,
-  PointOfSaleOutlined,
-  TodayOutlined,
-  CalendarMonthOutlined,
-  AdminPanelSettingsOutlined,
-  TrendingUpOutlined,
-  PieChartOutlined,
   FlightTakeoffSharp,
-  
+  ShowChartOutlined,
+  EqualizerOutlined,
+  PieChartOutlined,
 } from "@mui/icons-material";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
-import profileImage from "assets/profile.jpeg";
-
 const navItems = [
   {
     text: "Dashboard",
@@ -42,61 +31,20 @@ const navItems = [
   },
   {
     text: "Visualization",
-    icon: <FlightTakeoffSharp/>,
+    icon: <FlightTakeoffSharp />,
   },
   {
-    text: "Client Facing",
-    icon: null,
+    text: "LineChart",
+    icon: <ShowChartOutlined />,
   },
   {
-    text: "Products",
-    icon: <ShoppingCartOutlined />,
+    text: "BarChart",
+    icon: <EqualizerOutlined />,
   },
   {
-    text: "Customers",
-    icon: <Groups2Outlined />,
-  },
-  {
-    text: "Transactions",
-    icon: <ReceiptLongOutlined />,
-  },
-  {
-    text: "Geography",
-    icon: <PublicOutlined />,
-  },
-
-  {
-    text: "Sales",
-    icon: null,
-  },
-  {
-    text: "Overview",
-    icon: <PointOfSaleOutlined />,
-  },
-  {
-    text: "Daily",
-    icon: <TodayOutlined />,
-  },
-  {
-    text: "Monthly",
-    icon: <CalendarMonthOutlined />,
-  },
-  {
-    text: "Breakdown",
+    text: "PieChart",
     icon: <PieChartOutlined />,
-  },
-  {
-    text: "Management",
-    icon: null,
-  },
-  {
-    text: "Admin",
-    icon: <AdminPanelSettingsOutlined />,
-  },
-  {
-    text: "Performance",
-    icon: <TrendingUpOutlined />,
-  },
+  }
 ];
 
 const Sidebar = ({
@@ -106,14 +54,16 @@ const Sidebar = ({
   setIsSidebarOpen,
   isNonMobile,
 }) => {
-  const { pathname } = useLocation();
   const [active, setActive] = useState("");
+  const [selectedChart, setSelectedChart] = useState(null);
   const navigate = useNavigate();
   const theme = useTheme();
 
-  useEffect(() => {
-    setActive(pathname.substring(1));
-  }, [pathname]);
+  const handleNavItemClick = (text, chart) => {
+    setActive(text.toLowerCase());
+    setSelectedChart(chart);
+    navigate(`/${text.toLowerCase()}`);
+  };
 
   return (
     <Box component="nav">
@@ -150,7 +100,7 @@ const Sidebar = ({
               </FlexBetween>
             </Box>
             <List>
-              {navItems.map(({ text, icon }) => {
+              {navItems.map(({ text, icon, chart }) => {
                 if (!icon) {
                   return (
                     <Typography key={text} sx={{ m: "2.25rem 0 1rem 3rem" }}>
@@ -158,22 +108,18 @@ const Sidebar = ({
                     </Typography>
                   );
                 }
-                const lcText = text.toLowerCase();
 
                 return (
                   <ListItem key={text} disablePadding>
                     <ListItemButton
-                      onClick={() => {
-                        navigate(`/${lcText}`);
-                        setActive(lcText);
-                      }}
+                      onClick={() => handleNavItemClick(text, chart)}
                       sx={{
                         backgroundColor:
-                          active === lcText
+                          active === text.toLowerCase()
                             ? theme.palette.secondary[300]
                             : "transparent",
                         color:
-                          active === lcText
+                          active === text.toLowerCase()
                             ? theme.palette.primary[600]
                             : theme.palette.secondary[100],
                       }}
@@ -182,7 +128,7 @@ const Sidebar = ({
                         sx={{
                           ml: "2rem",
                           color:
-                            active === lcText
+                            active === text.toLowerCase()
                               ? theme.palette.primary[600]
                               : theme.palette.secondary[200],
                         }}
@@ -190,7 +136,7 @@ const Sidebar = ({
                         {icon}
                       </ListItemIcon>
                       <ListItemText primary={text} />
-                      {active === lcText && (
+                      {active === text.toLowerCase() && (
                         <ChevronRightOutlined sx={{ ml: "auto" }} />
                       )}
                     </ListItemButton>
@@ -202,16 +148,12 @@ const Sidebar = ({
 
           <Box bottom="2rem">
             <Divider />
-            <FlexBetween textTransform="none" gap="1rem" m="1.5rem 2rem 0 3rem">
-              <Box
-                component="img"
-                alt="profile"
-                src={profileImage}
-                height="40px"
-                width="40px"
-                borderRadius="50%"
-                sx={{ objectFit: "cover" }}
-              />
+            <FlexBetween
+              textTransform="none"
+              gap="1rem"
+              m="1.5rem 2rem 0 3rem"
+            >
+             
               <Box textAlign="left">
                 <Typography
                   fontWeight="bold"
@@ -227,12 +169,7 @@ const Sidebar = ({
                   {user.occupation}
                 </Typography>
               </Box>
-              <SettingsOutlined
-                sx={{
-                  color: theme.palette.secondary[300],
-                  fontSize: "25px ",
-                }}
-              />
+              
             </FlexBetween>
           </Box>
         </Drawer>
